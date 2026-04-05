@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class Booking {
 
     private Integer id;
-    private LocalDate date;
+    private String date;
     private Timestamp createdAt;
     private String type;
     private String comments;
@@ -33,11 +33,11 @@ public class Booking {
     private ArrayList<Shift> shifts;
 
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -49,7 +49,7 @@ public class Booking {
         this.shifts = shifts;
     }
 
-    public Booking(Integer id, LocalDate date, Timestamp createdAt, String type, String comments, Vehicle vehicle, Mechanic mechanic, String status, Cost cost, User user, ArrayList<Shift> shifts) {
+    public Booking(Integer id, String date, Timestamp createdAt, String type, String comments, Vehicle vehicle, Mechanic mechanic, String status, Cost cost, User user, ArrayList<Shift> shifts) {
         this.id = id;
         this.date = date;
         this.createdAt = createdAt;
@@ -63,7 +63,7 @@ public class Booking {
         this.shifts = shifts;
     }
 
-    public Booking(LocalDate date, String type, String comments, Vehicle vehicle, String status, User user) {
+    public Booking(String date, String type, String comments, Vehicle vehicle, String status, User user) {
         this.date = date;
         this.type = type;
         this.comments = comments;

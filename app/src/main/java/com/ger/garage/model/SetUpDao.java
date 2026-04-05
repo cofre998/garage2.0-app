@@ -40,7 +40,7 @@ public class SetUpDao {
     private Integer quantityRepairShift;
     // Quantity of shifts for Mayor Repair
     private Integer quantityMajorRepairShift;
-    private String emailAdmin = "admin@gmail.com";
+    private String emailAdmin = "jonathancofre998@gmail.com";
 
     public Mechanic getMechanic(Integer id) {
 

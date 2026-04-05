@@ -337,13 +337,13 @@ public class ListOfBookingsActivity extends AppCompatActivity implements ListVie
 
     @Override
     protected void onPause() {
-        presenter.removeListener();
+        presenter.detach();
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        presenter.removeListener();
+        presenter.detach();
         super.onStop();
     }
 

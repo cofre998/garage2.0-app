@@ -1,50 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ger.garage">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permisos -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".view.AllocateCostActivity"></activity>
-        <activity android:name=".view.AllocateMechanicActivity" />
-        <activity android:name=".view.ListOfBookingsActivity" />
-        <activity android:name=".view.AdminDisplayBookingsActivity" />
-        <activity android:name=".view.AdminHomeActivity" />
-        <activity android:name=".view.DisplayBookingsActivity" />
-        <activity
-            android:name=".view.MakeABookingActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.UserHomeActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".view.LoginActivity"
-            android:screenOrientation="portrait" />
+        android:theme="@style/AppTheme"
+        tools:replace="android:label,android:icon,android:theme">
+
+        <!-- Activities -->
+        <activity android:name=".view.AllocateCostActivity"
+            android:exported="true"
+            />
+        <activity android:name=".view.AllocateMechanicActivity"
+            android:exported="true"
+            />
+        <activity android:name=".view.ListOfBookingsActivity"
+            android:exported="true"
+            />
+        <activity android:name=".view.AdminDisplayBookingsActivity"
+            android:exported="true"
+            />
+        <activity android:name=".view.AdminHomeActivity"
+            android:exported="true"
+            />
+        <activity android:name=".view.DisplayBookingsActivity"
+            android:exported="true"
+            />
+        <activity android:name=".view.MakeABookingActivity"
+            android:screenOrientation="portrait"
+            android:exported="true"
+            />
+        <activity android:name=".view.UserHomeActivity"
+            android:screenOrientation="portrait"
+            android:exported="true"
+            />
+        <activity android:name=".view.LoginActivity"
+
+            android:screenOrientation="portrait"
+            android:exported="true"/>
         <activity
             android:name=".view.RegisterActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- FileProvider corregido para Android 12+ -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.ger.garage"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/provider_paths"/>
         </provider>
+
     </application>
 
 </manifest>
