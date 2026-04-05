@@ -77,32 +77,50 @@ public class BookingDao {
 
     public void getAllBookings(FirebaseListener2 listener) {
 
-        databaseReference.child("bookings")
+        db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookingByDate")
+                .get()
+                .addOnSuccessListener(dateSnapshots -> {
 
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    ArrayList<Booking> list = new ArrayList<>();
 
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                    for (DocumentSnapshot dateDoc : dateSnapshots) {
 
-                        ArrayList<Booking> list = new ArrayList<>();
+                        Map<String, Object> bookingsMap = dateDoc.getData();
 
-                        for (DataSnapshot data : snapshot.getChildren()) {
-                            Booking b = data.getValue(Booking.class);
-                            list.add(b);
+                        if (bookingsMap != null) {
+                            for (Map.Entry<String, Object> entry : bookingsMap.entrySet()) {
+
+                                Map<String, Object> bookingMap =
+                                        (Map<String, Object>) entry.getValue();
+
+                                Booking b = new Booking(
+                                        Integer.parseInt(entry.getKey()),
+                                        (String) bookingMap.get("date"),
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        (String) bookingMap.get("status"),
+                                        null,
+                                        null,
+                                        null
+                                );
+
+                                list.add(b);
+                            }
                         }
-
-                        Log.d("ADMIN", "TOTAL: " + list.size());
-                        listener.onSuccess(list);
                     }
 
-                    @Override
-                    public void onCancelled(DatabaseError error) {
-                        Log.e("ADMIN", error.getMessage());
-                    }
-                });
+                    Log.d("ADMIN", "TOTAL BOOKINGS: " + list.size());
+                    listener.onSuccess(list);
+                })
+                .addOnFailureListener(e ->
+                        Log.e("ADMIN", e.getMessage())
+                );
     }
-
-    private DatabaseReference databaseReference;
 
 
     private void executeQueryByARangeOfDates(LocalDate fDate, LocalDate sDate, final FirebaseListener2 listener2) {
