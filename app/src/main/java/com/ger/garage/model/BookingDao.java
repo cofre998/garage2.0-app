@@ -9,6 +9,12 @@ import com.google.firebase.firestore.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import android.util.Log;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 public class BookingDao {
 
@@ -69,39 +75,35 @@ public class BookingDao {
                 );
     }
 
-    public void getAllBookings(final FirebaseListener listener) {
+    public void getAllBookings(FirebaseListener2 listener) {
 
-        db.collection("garage")
-                .document("bookingInformation")
-                .collection("bookingByDate")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
+        databaseReference.child("bookings")
 
-                    ArrayList<Booking> bookings = new ArrayList<>();
+                .addListenerForSingleValueEvent(new ValueEventListener() {
 
-                    int counter = 0;
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
 
-                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        ArrayList<Booking> list = new ArrayList<>();
 
-                        String date = doc.getId();
+                        for (DataSnapshot data : snapshot.getChildren()) {
+                            Booking b = data.getValue(Booking.class);
+                            list.add(b);
+                        }
 
-                        // 👇 creamos booking simple
-                        Booking booking = new Booking(counter);
-                        booking.setStatus("Pending");
-                        booking.setDate(date);
-
-                        bookings.add(booking);
-
-                        counter++;
+                        Log.d("ADMIN", "TOTAL: " + list.size());
+                        listener.onSuccess(list);
                     }
 
-                    listener.onSuccess(bookings); // ✔ AHORA SÍ FUNCIONA
-
-                })
-                .addOnFailureListener(e ->
-                        listener.onFailure(new FirebaseException(e.getMessage()))
-                );
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        Log.e("ADMIN", error.getMessage());
+                    }
+                });
     }
+
+    private DatabaseReference databaseReference;
+
 
     private void executeQueryByARangeOfDates(LocalDate fDate, LocalDate sDate, final FirebaseListener2 listener2) {
 

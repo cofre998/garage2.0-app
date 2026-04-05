@@ -53,3 +53,4 @@ Below, I paste screenshots of the website.
 
 ![alt text](https://github.com/Jorge36/Garage/blob/20a230df0e9bae5565a40dd307ceac23d72d7fc9/Version%20Website/documentation/wireframes/Register.png)
 
+# garage2.0-app
