@@ -11,6 +11,10 @@ public class Mechanic {
     private Integer id;
     private String name;
 
+    public Mechanic() {
+        // Required empty constructor for Firebase
+    }
+
     public Mechanic(Integer id, String name) {
         this.id = id;
         this.name = name;

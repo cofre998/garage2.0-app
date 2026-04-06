@@ -2,43 +2,65 @@ package com.ger.garage.model;
 
 import com.ger.garage.Presenter.FirebaseException;
 import com.ger.garage.Presenter.FirebaseListener;
-import com.ger.garage.Presenter.FirebaseListener2;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.*;
+import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import android.util.Log;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 public class BookingDao {
 
     private FirebaseFirestore db;
     private FirebaseAuth mFirebaseAuth;
-    private final String bookingsCollectionPath = "garage/bookingInformation/bookings";
 
     public BookingDao() {
         mFirebaseAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
     }
 
-    // ---------- Obtener reservas por fecha ----------
-    public void getBookingsByDate(LocalDate fDate, LocalDate sDate, final FirebaseListener2 listener2) {
-        if (sDate == null) {
-            executeQueryByADate(fDate, listener2);
-        } else {
-            executeQueryByARangeOfDates(fDate, sDate, listener2);
-        }
+    // ---------- POR FECHA ----------
+    public void getBookingsByDate(LocalDate fDate, LocalDate sDate, FirebaseListener listener) {
+
+        FirebaseFirestore.getInstance()
+                .collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    ArrayList<Booking> list = new ArrayList<>();
+
+                    for (DocumentSnapshot doc : snapshot) {
+
+                        Booking b = doc.toObject(Booking.class);
+
+                        if (b != null) {
+
+                            // 🔥 GUARDAR FIREBASE ID
+                            b.setFirebaseId(doc.getId());
+
+                            // 🔥 FILTRAR POR FECHA
+                            if (b.getDate() != null &&
+                                    b.getDate().equals(fDate.toString())) {
+
+                                list.add(b);
+                            }
+                        }
+                    }
+
+                    listener.onSuccessBookings(list);
+                })
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage()))
+                );
     }
 
-    private void executeQueryByADate(LocalDate date, final FirebaseListener2 listener2) {
+    private void executeQueryByADate(LocalDate date, final FirebaseListener listener) {
 
-        String dateStr = date.toString();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String dateStr = date.format(formatter);
 
         db.collection("garage")
                 .document("bookingInformation")
@@ -53,77 +75,33 @@ public class BookingDao {
 
                         Map<String, Object> data = documentSnapshot.getData();
 
-                        for (Map.Entry<String, Object> entry : data.entrySet()) {
+                        if (data != null) {
+                            for (Map.Entry<String, Object> entry : data.entrySet()) {
 
-                            String bookingId = entry.getKey();
-
-                            Map<String, Object> bookingMap = (Map<String, Object>) entry.getValue();
-
-                            Booking booking = new Booking(Integer.parseInt(bookingId));
-
-                            booking.setStatus((String) bookingMap.get("status"));
-                            booking.setDate(dateStr);
-
-                            bookings.add(booking);
-                        }
-                    }
-
-                    listener2.onSuccessUpdateMechanic(bookings);
-                })
-                .addOnFailureListener(e ->
-                        listener2.onFailure(new FirebaseException(e.getMessage()))
-                );
-    }
-
-    public void getAllBookings(FirebaseListener2 listener) {
-
-        db.collection("garage")
-                .document("bookingInformation")
-                .collection("bookingByDate")
-                .get()
-                .addOnSuccessListener(dateSnapshots -> {
-
-                    ArrayList<Booking> list = new ArrayList<>();
-
-                    for (DocumentSnapshot dateDoc : dateSnapshots) {
-
-                        Map<String, Object> bookingsMap = dateDoc.getData();
-
-                        if (bookingsMap != null) {
-                            for (Map.Entry<String, Object> entry : bookingsMap.entrySet()) {
-
+                                String bookingId = entry.getKey();
                                 Map<String, Object> bookingMap =
                                         (Map<String, Object>) entry.getValue();
 
-                                Booking b = new Booking(
-                                        Integer.parseInt(entry.getKey()),
-                                        (String) bookingMap.get("date"),
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        (String) bookingMap.get("status"),
-                                        null,
-                                        null,
-                                        null
-                                );
+                                Booking booking = new Booking(Integer.parseInt(bookingId));
 
-                                list.add(b);
+                                booking.setStatus((String) bookingMap.get("status"));
+                                booking.setDate(dateStr);
+
+                                bookings.add(booking);
                             }
                         }
                     }
 
-                    Log.d("ADMIN", "TOTAL BOOKINGS: " + list.size());
-                    listener.onSuccess(list);
+                    listener.onSuccessBookings(bookings);
+
                 })
                 .addOnFailureListener(e ->
-                        Log.e("ADMIN", e.getMessage())
+                        listener.onFailure(new FirebaseException(e.getMessage()))
                 );
     }
 
-
-    private void executeQueryByARangeOfDates(LocalDate fDate, LocalDate sDate, final FirebaseListener2 listener2) {
+    // ---------- RANGO DE FECHAS ----------
+    private void executeQueryByARangeOfDates(LocalDate fDate, LocalDate sDate, final FirebaseListener listener) {
 
         ArrayList<Booking> allBookings = new ArrayList<>();
 
@@ -145,67 +123,37 @@ public class BookingDao {
                             allBookings.add(buildBooking(document));
                         }
 
-                        listener2.onSuccessUpdateMechanic(allBookings);
-                    });
+                        listener.onSuccessBookings(allBookings);
+
+                    })
+                    .addOnFailureListener(e ->
+                            listener.onFailure(new FirebaseException(e.getMessage()))
+                    );
 
             current = current.plusDays(1);
         }
     }
 
-    // ---------- Construir objeto Booking ----------
+    // ---------- BUILD BOOKING ----------
     private Booking buildBooking(QueryDocumentSnapshot document) {
 
         Integer id = Integer.parseInt(document.getId());
 
-        // 👇 CORRECTO
         String date = document.getString("date");
-
         String status = document.getString("status");
 
-        Map<String, Object> mechMap = (Map<String, Object>) document.get("mechanic");
-        Mechanic mechanic = null;
-        if (mechMap != null) {
-            mechanic = new Mechanic(
-                    ((Long) mechMap.get("id")).intValue(),
-                    (String) mechMap.get("name")
-            );
-        }
-
-        ArrayList<Map<String, Object>> shiftsMap =
-                (ArrayList<Map<String, Object>>) document.get("shifts");
-
-        ArrayList<Shift> shifts = new ArrayList<>();
-
-        if (shiftsMap != null) {
-            for (Map<String, Object> s : shiftsMap) {
-
-                int idShift = Integer.parseInt(s.get("id").toString());
-                String description = (String) s.get("description");
-
-                Map<String, Object> start = (Map<String, Object>) s.get("timeStart");
-                Map<String, Object> end = (Map<String, Object>) s.get("timeEnd");
-
-                LocalTime timeStart = LocalTime.of(
-                        Integer.parseInt(start.get("hour").toString()),
-                        Integer.parseInt(start.get("minute").toString())
-                );
-
-                LocalTime timeEnd = LocalTime.of(
-                        Integer.parseInt(end.get("hour").toString()),
-                        Integer.parseInt(end.get("minute").toString())
-                );
-
-                shifts.add(new Shift(idShift, description, timeStart, timeEnd));
-            }
-        }
-
-        return new Booking(id, date, null, null, null, null, mechanic, status, null, null, shifts);
+        return new Booking(id, date, null, null, null, null,
+                null, status, null, null, null);
     }
 
-    // ---------- Actualizar mecánico ----------
-    public void updateBookingMechanics(final Booking booking, final Mechanic mechanic, final FirebaseListener listener) {
+    // ---------- UPDATE MECANICO ----------
+    public void updateBookingMechanics(final Booking booking,
+                                       final Mechanic mechanic,
+                                       final FirebaseListener listener) {
 
-        DocumentReference bookingRef = db.collection(bookingsCollectionPath)
+        DocumentReference bookingRef = db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
                 .document(booking.getId().toString());
 
         Map<String, Object> mechanicMap = new HashMap<>();
@@ -213,22 +161,113 @@ public class BookingDao {
         mechanicMap.put("name", mechanic.getName());
 
         bookingRef.update("mechanic", mechanicMap)
-                .addOnSuccessListener(aVoid -> listener.onSuccess(booking.getId()))
-                .addOnFailureListener(e -> listener.onFailure(new FirebaseException(e.getMessage())));
+                .addOnSuccessListener(aVoid ->
+                        listener.onSuccessInt(booking.getId())
+                )
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage()))
+                );
     }
 
-    // ---------- Cambiar estado ----------
-    public void changeStatus(Booking booking, String newStatus, FirebaseListener2 listener) {
+    // ---------- CAMBIAR STATUS ----------
+    public void changeStatus(Booking booking, String newStatus, FirebaseListener listener) {
 
-        DocumentReference bookingRef = db.collection(bookingsCollectionPath)
+        DocumentReference bookingRef = db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
                 .document(booking.getId().toString());
 
         bookingRef.update("status", newStatus)
-                .addOnSuccessListener(aVoid -> listener.onSuccess(newStatus))
-                .addOnFailureListener(e -> listener.onFailure(new FirebaseException(e.getMessage())));
+                .addOnSuccessListener(aVoid ->
+                        listener.onSuccessString(newStatus)
+                )
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage()))
+                );
     }
 
-    public void removeListenerBookingsByRef() {
-        // opcional
+    public void assignMechanic(Booking booking, Mechanic mechanic, FirebaseListener listener) {
+
+        db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
+                .document(String.valueOf(booking.getId()))
+                .update(
+                        "mechanicId", mechanic.getId(),
+                        "mechanicName", mechanic.getName()
+                )
+                .addOnSuccessListener(aVoid ->
+                        listener.onSuccessString("mechanic_assigned")
+                )
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage()))
+                );
     }
+    // ---------- GET ALL BOOKINGS ----------
+    public void getBookings(FirebaseListener listener) {
+
+        db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    ArrayList<Booking> bookings = new ArrayList<>();
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        Booking booking = doc.toObject(Booking.class);
+                        bookings.add(booking);
+                    }
+
+                    listener.onSuccessBookings(bookings);
+                })
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage()))
+                );
+    }
+
+    // ---------- REMOVE LISTENER ----------
+    public void removeListenerBookingsByRef() {
+        // No listener activo por ahora
+    }
+
+    public void createBooking(Booking booking, FirebaseListener listener) {
+
+        DocumentReference ref = db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
+                .document(); // genera ID
+
+        String firebaseId = ref.getId();
+        booking.setFirebaseId(firebaseId); // 👈 importante
+
+// si quieres mantener id numérico:
+        booking.setId(Integer.parseInt(firebaseId.hashCode() + ""));
+
+        ref.set(booking)
+                .addOnSuccessListener(unused ->
+                        listener.onSuccessString(firebaseId))
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage())));
+    }
+
+    public void allocateMechanic(String bookingId, String mechanic, FirebaseListener listener) {
+
+        Map<String, Object> mechanicMap = new HashMap<>();
+        mechanicMap.put("name", mechanic);
+
+        db.collection("garage")
+                .document("bookingInformation")
+                .collection("bookings")
+                .document(bookingId)
+                .update("mechanic", mechanicMap,
+                        "status", "Assigned")
+                .addOnSuccessListener(unused ->
+                        listener.onSuccessString("Mechanic assigned"))
+                .addOnFailureListener(e ->
+                        listener.onFailure(new FirebaseException(e.getMessage())));
+    }
+
+
+
 }

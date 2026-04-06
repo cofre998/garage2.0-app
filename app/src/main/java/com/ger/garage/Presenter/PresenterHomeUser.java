@@ -1,11 +1,7 @@
 package com.ger.garage.Presenter;
 
-import com.ger.garage.model.Booking;
 import com.ger.garage.model.User;
 import com.ger.garage.model.UserDao;
-
-import java.util.ArrayList;
-import java.util.Map;
 
 public class PresenterHomeUser implements HomeUserContract.Presenter, FirebaseListener {
 
@@ -19,51 +15,54 @@ public class PresenterHomeUser implements HomeUserContract.Presenter, FirebaseLi
 
     @Override
     public void logOut() {
-
         userDao.logOut();
-
     }
 
-    // get user details from database
     @Override
     public void getUserDetails() {
-
         userDao.getUser(this);
-
     }
 
     @Override
     public void detach() {
-
         this.view = null;
         this.userDao = null;
+    }
 
+    // ✅ NUEVO CALLBACK CORRECTO
+    @Override
+    public void onSuccessUser(User user) {
+
+        if (user != null) {
+            view.showUserDetail(
+                    user.getName(),
+                    user.getEmail(),
+                    user.getMobilePhoneNumber()
+            );
+        } else {
+            //view.showErrorMessage("User not found in database");
+        }
     }
 
     @Override
-    public void onSuccess(User user) {
-        view.showUserDetail(user.getName(), user.getEmail(), user.getMobilePhoneNumber());
-
+    public void onSuccessBookings(java.util.ArrayList<com.ger.garage.model.Booking> bookings) {
+        // no usado aquí
     }
 
     @Override
-    public void onSuccess(Map<Integer, Integer> quantityOfBookingsByShift) {
-        // We don't need implementation on this Presenter
+    public void onSuccessString(String result) {
+        // no usado aquí
     }
 
-
     @Override
-    public void onSuccess(Integer idBooking) {
-        // We don't need implementation on this Presenter
+    public void onSuccessInt(int value) {
+        // no usado aquí
     }
 
     @Override
     public void onFailure(FirebaseException e) {
-        // We don't need implementation on this Presenter
-    }
-
-    @Override
-    public void onSuccess(ArrayList<Booking> bookings) {
-
+        if (view != null) {
+            // opcional: mostrar error
+        }
     }
 }

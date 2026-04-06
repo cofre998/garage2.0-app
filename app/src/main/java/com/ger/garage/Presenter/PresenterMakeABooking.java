@@ -33,8 +33,10 @@ public class PresenterMakeABooking implements MakeABookingContract.Presenter {
     public void getVehicles() {
 
         ArrayList<String> vehicles = new ArrayList<>();
-        vehicles.add("Auto 1");
-        vehicles.add("Auto 2");
+        vehicles.add("Ford");
+        vehicles.add("Toyota");
+        vehicles.add("Nissan");
+        vehicles.add("Chevrolet");
 
         if (view != null) {
             view.showVehicles(vehicles);
@@ -78,22 +80,46 @@ public class PresenterMakeABooking implements MakeABookingContract.Presenter {
     }
 
     // 🔥 AQUÍ ESTABA EL ERROR GRANDE
+
+
+
     @Override
     public void book(String vehicle, String typeOfBooking, LocalDate createdAt, String shift) {
 
-        Booking booking = new Booking(
-                createdAt.toString(),   // ✔ String
-                typeOfBooking,
-                shift,
-                new Vehicle(vehicle),
-                "Pending",
-                new User("Admin")
-        );
+        Booking booking = new Booking();
 
-        // ⚠️ no llamamos saveBooking porque no existe en tu DAO
+        booking.setDate(createdAt.toString());
+        booking.setType(typeOfBooking);
+        booking.setComments(shift);
+        booking.setStatus("Pending");
 
-        if (view != null) {
-            view.showSuccessMessage("Reserva creada correctamente");
-        }
+        Vehicle v = new Vehicle();
+        v.setNumberPlate(vehicle);
+        booking.setVehicle(v);
+
+        User user = new User();
+        user.setName("Cliente");
+        booking.setUser(user);
+
+        bookingDao.createBooking(booking, new FirebaseListener() {
+
+            @Override
+            public void onSuccessString(String result) {
+                if (view != null) {
+                    view.showSuccessMessage(result);
+                }
+            }
+
+            @Override
+            public void onFailure(FirebaseException e) {
+                if (view != null) {
+                    view.showErrorMessage(e.getMessage());
+                }
+            }
+
+            @Override public void onSuccessBookings(ArrayList<Booking> bookings) {}
+            @Override public void onSuccessUser(User user) {}
+            @Override public void onSuccessInt(int value) {}
+        });
     }
 }

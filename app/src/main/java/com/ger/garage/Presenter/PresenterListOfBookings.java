@@ -1,7 +1,9 @@
 package com.ger.garage.Presenter;
+import com.ger.garage.model.User;
 
 import com.ger.garage.model.Booking;
 import com.ger.garage.model.BookingDao;
+import com.ger.garage.model.User;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,29 +26,38 @@ public class PresenterListOfBookings implements ListOfBookingsContract.Presenter
 
     @Override
     public void getBookings(LocalDate fDate, LocalDate sDate) {
-        bookingDao.getBookingsByDate(fDate, sDate, new FirebaseListener2() {
+
+        bookingDao.getBookingsByDate(fDate, sDate, new FirebaseListener() {
+
             @Override
-            public void onSuccess(ArrayList<Booking> bookings) {
-                ArrayList<String> bookingStrings = new ArrayList<>();
-                for (Booking b : bookings) {
-                    bookingStrings.add(b.toStringWithFullInformation());
+            public void onSuccessBookings(ArrayList<Booking> bookings) {
+
+                if (view != null) {
+
+                    ArrayList<String> list = new ArrayList<>();
+
+                    for (Booking b : bookings) {
+                        list.add(b.toStringWithFullInformation());
+                    }
+
+                    view.showBookings(list);
                 }
-                if (view != null) view.showBookings(bookingStrings);
             }
 
             @Override
-            public void onSuccess(String newStatus) {
-                // No usado
-            }
+            public void onSuccessUser(User user) {}
+
+            @Override
+            public void onSuccessString(String result) {}
+
+            @Override
+            public void onSuccessInt(int value) {}
 
             @Override
             public void onFailure(FirebaseException e) {
-                if (view != null) view.showErrorMessage(e.getMessage());
-            }
-
-            @Override
-            public void onSuccessUpdateMechanic(ArrayList<Booking> bookings) {
-                // No usado
+                if (view != null) {
+                    view.showErrorMessage(e.getMessage());
+                }
             }
         });
     }
@@ -58,7 +69,6 @@ public class PresenterListOfBookings implements ListOfBookingsContract.Presenter
 
     @Override
     public String[] getStatus(String booking) {
-        // Implementar según necesidad
         return new String[]{};
     }
 }

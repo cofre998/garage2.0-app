@@ -3,9 +3,9 @@ package com.ger.garage.Presenter;
 import com.ger.garage.model.Booking;
 import com.ger.garage.model.BookingDao;
 import com.ger.garage.model.User;
-import java.util.Map;
-import java.util.HashMap;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PresenterDisplayBookings implements DisplayBookingsContract.Presenter {
 
@@ -22,49 +22,39 @@ public class PresenterDisplayBookings implements DisplayBookingsContract.Present
         view = null;
     }
 
+
+
     @Override
     public void getBookings() {
 
-        bookingDao.getAllBookings(new FirebaseListener() {
+        bookingDao.getBookings(new FirebaseListener() {
 
             @Override
-            public void onSuccess(ArrayList<Booking> bookingsList) {
-
-                HashMap<Integer, String> bookings = new HashMap<>();
-                HashMap<Integer, String> status = new HashMap<>();
-
-                int i = 0;
-
-                for (Booking b : bookingsList) {
-
-                    bookings.put(i, "Booking date: " + b.getDate());
-                    status.put(i, b.getStatus());
-
-                    i++;
-                }
+            public void onSuccessBookings(ArrayList<Booking> bookings) {
 
                 if (view != null) {
-                    view.showBookings(bookings, status);
+
+                    HashMap<Integer, String> mapBookings = new HashMap<>();
+                    HashMap<Integer, String> mapStatus = new HashMap<>();
+
+                    int i = 0;
+
+                    for (Booking b : bookings) {
+
+                        mapBookings.put(i, "Fecha: " + b.getDate());
+                        mapStatus.put(i, b.getStatus());
+
+                        i++;
+                    }
+
+                    view.showBookings(mapBookings, mapStatus);
                 }
             }
 
-            @Override
-            public void onFailure(FirebaseException e) {
-                if (view != null) {
-                    view.showErrorMessage(e.getMessage());
-                }
-            }
-
-            // 🔥 NECESARIOS (aunque no se usen)
-
-            @Override
-            public void onSuccess(User user) { }
-
-            @Override
-            public void onSuccess(Map<Integer, Integer> quantityOfBookingsByShift) { }
-
-            @Override
-            public void onSuccess(Integer idBooking) { }
+            @Override public void onSuccessUser(User user) {}
+            @Override public void onSuccessString(String result) {}
+            @Override public void onSuccessInt(int value) {}
+            @Override public void onFailure(FirebaseException e) {}
 
         });
     }

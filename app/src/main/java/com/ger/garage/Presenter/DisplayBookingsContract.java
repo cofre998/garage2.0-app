@@ -11,7 +11,10 @@ public class DisplayBookingsContract {
 
     public interface View{
         void showBookings(HashMap<Integer, String> bookings, HashMap<Integer,String> status);
-        void showErrorMessage(String errorMessage);  // <-- AGREGADO
+        void showErrorMessage(String errorMessage);
+        void showMechanicAssignedSuccess(String message);
+        void showMechanicAssignedError(String message);// <-- AGREGADO
+       // getBookings();
     }
 
 }

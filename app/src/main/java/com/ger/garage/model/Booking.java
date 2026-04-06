@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class Booking {
 
     private Integer id;
+    private String firebaseId;
     private String date;
     private Timestamp createdAt;
     private String type;
@@ -32,6 +33,9 @@ public class Booking {
     private User user;
     private ArrayList<Shift> shifts;
 
+    public Booking() {
+        // Required empty constructor for Firebase
+    }
 
     public String getDate() {
         return date;
@@ -70,6 +74,14 @@ public class Booking {
         this.vehicle = vehicle;
         this.status = status;
         this.user = user;
+    }
+
+    public String getFirebaseId() {
+        return firebaseId;
+    }
+
+    public void setFirebaseId(String firebaseId) {
+        this.firebaseId = firebaseId;
     }
 
     public User getUser() {

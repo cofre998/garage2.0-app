@@ -1,5 +1,6 @@
 package com.ger.garage.model;
 
+import com.ger.garage.Presenter.FirebaseException;
 import com.ger.garage.Presenter.FirebaseListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -56,7 +57,7 @@ public class UserDao {
         docDataUser.put("userType", user.getUserType());
         docDataUser.put("vehicles", user.getVehicles());
 
-        db.collection(usersCollectionpath).document(user.getId()).set(docDataUser)
+        db.collection(usersCollectionpath).document(getUid()).set(docDataUser)
                 .addOnSuccessListener(successListener)
                 .addOnFailureListener(failureListener);
 
@@ -105,19 +106,25 @@ public class UserDao {
 
         DocumentReference docRef = db.collection(usersCollectionpath).document(getUid());
 
-        // Source can be CACHE, SERVER, or DEFAULT.
-        Source source = Source.SERVER;
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
 
-        docRef.get(source).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+            if (documentSnapshot.exists()) {
 
-                User user = documentSnapshot.toObject(User.class); // get the object user from database
-                listener.onSuccess(user);
+                User user = documentSnapshot.toObject(User.class);
 
+                if (user != null) {
+                    listener.onSuccessUser(user);
+                } else {
+                    listener.onFailure(new FirebaseException("User parse error"));
+                }
+
+            } else {
+                listener.onFailure(new FirebaseException("User does not exist"));
             }
-        });
 
+        }).addOnFailureListener(e ->
+                listener.onFailure(new FirebaseException(e.getMessage()))
+        );
     }
 
 }

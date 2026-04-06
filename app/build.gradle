@@ -3,6 +3,8 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+
+
 android {
     compileSdk 33
 
@@ -14,6 +16,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+        buildFeatures {
+            buildConfig true
+        }
+
 
     buildTypes {
         release {
@@ -27,6 +34,7 @@ android {
 }
 
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])  // así está correcto
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -41,8 +49,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:22.3.0'
 
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
 
     implementation 'com.github.psinetron:slycalendarview:0.0.9'
     implementation 'com.itextpdf:itextg:5.5.10'

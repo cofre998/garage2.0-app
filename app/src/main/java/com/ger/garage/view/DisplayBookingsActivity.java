@@ -29,6 +29,20 @@ import java.util.Map;
 public class DisplayBookingsActivity extends AppCompatActivity implements DisplayBookingsContract.View {
 
     private PresenterDisplayBookings presenter;
+    @Override
+    public void showMechanicAssignedError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMechanicAssignedSuccess(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void getBookings() {
+        // No necesitas hacer nada aquí, ya que tu Presenter maneja la lógica
+    }
 
 
     @Override
