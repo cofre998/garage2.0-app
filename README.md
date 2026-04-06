@@ -6,13 +6,6 @@ allocate mechanics, change status of the bookings and print a schedule (Pdf docu
 
 I used Android Studio IDE, Java Programming Language and Firebase (Firestore and Authentication Service)
 
-In ./Documentation/, we can find documentation and more information about the project:
-1. Final Project - Jorge Robla - 2019070.pdf (Documentation)
-2. eGarage - Jorge Robla - 2019070.pptx (Presentation)
-3. flow and screens.docx (documentation)
-4. Presentation final.mp4 (video displaying functionalities of the application)
-
-In ./testing/, we can find videos in which we see the mobile application running. Below, I add screenshots of the mobile application.
 
 ![alt text](https://github.com/Jorge36/Garage/blob/75272d5db23a387ce74264b41494cd72277891f9/Documentation/imgMobApp/booking.png)
 
@@ -22,7 +15,6 @@ In ./testing/, we can find videos in which we see the mobile application running
 
 ![alt text](https://github.com/Jorge36/Garage/blob/75272d5db23a387ce74264b41494cd72277891f9/Documentation/imgMobApp/print.png)
 
-In ./Documentation/ we can find a video (Presentation final.mp4) showing functionalities of Garage mobile application.
 
 In ./WebSite/, there is a website version of Garage to be run on the browser (plus documentation and a file for installation).
 Below, I paste screenshots of the website.
