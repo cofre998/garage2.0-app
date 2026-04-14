@@ -6,36 +6,19 @@ allocate mechanics, change status of the bookings and print a schedule (Pdf docu
 
 I used Android Studio IDE, Java Programming Language and Firebase (Firestore and Authentication Service)
 
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.22.47.jpeg)
 
-![alt text](https://github.com/Jorge36/Garage/blob/75272d5db23a387ce74264b41494cd72277891f9/Documentation/imgMobApp/booking.png)
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.22.47%20(1).jpeg)
 
-![alt text](https://github.com/Jorge36/Garage/blob/75272d5db23a387ce74264b41494cd72277891f9/Documentation/imgMobApp/booking2.png)
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.22.48%20(1).jpeg)
 
-![alt text](https://github.com/Jorge36/Garage/blob/75272d5db23a387ce74264b41494cd72277891f9/Documentation/imgMobApp/list_bookings.png)
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.22.48%20(2).jpeg)
 
-![alt text](https://github.com/Jorge36/Garage/blob/75272d5db23a387ce74264b41494cd72277891f9/Documentation/imgMobApp/print.png)
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.22.48%20(3).jpeg)
 
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.23.35.jpeg)
 
-In ./WebSite/, there is a website version of Garage to be run on the browser (plus documentation and a file for installation).
-Below, I paste screenshots of the website.
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/admin_home_page.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/booking.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/booking2.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/index.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/login.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/login2.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/print_invoice1.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/b0f22e59155be9884ab2faefdf279b36cf1c3938/Version%20Website/imgWebSite/print_invoice2.png)
-
-![alt text](https://github.com/Jorge36/Garage/blob/fef5c4dc79718f767bcbdc378cb963e0eaf0b21e/Version%20Website/imgWebSite/register.png)
+![alt text](https://github.com/cofre998/garage2.0-app/blob/main/Documentation/imgMobApp/WhatsApp%20Image%202026-04-13%20at%2022.22.48%20(4).jpeg)
 
 # Wireframes:
 
