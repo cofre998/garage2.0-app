@@ -1,52 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
 
-    <!-- Permisos -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ger.garage"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 🔥 PERMISOS -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:allowBackup">
 
-        <activity android:name=".view.AllocateCostActivity"
+        <!-- 🔥 GOOGLE MAPS API (SOLO UNA VEZ) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAvd9XFWMwG-6qilEkryn-AD1Yc9_oWXgI" />
+
+        <!-- 🔧 Compatibilidad -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".view.TrackingClienteActivity"
+            android:exported="true"/>
+
+        <!-- ACTIVITIES -->
+        <activity
+            android:name=".view.GenerateInvoiceActivity"
             android:exported="true" />
 
-        <activity android:name=".view.AllocateMechanicActivity"
+        <activity android:name=".view.ModoTerrenoActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".view.AllocateCostActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".view.AllocateMechanicActivity"
+            android:exported="true" />
+        <activity
+            android:name=".view.ListOfBookingsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".view.AdminDisplayBookingsActivity"
+            android:exported="true" />
+        <activity
+            android:name=".view.AdminHomeActivity"
+            android:exported="true" />
+        <activity
+            android:name=".view.DisplayBookingsActivity"
             android:exported="true" />
 
-        <activity android:name=".view.ListOfBookingsActivity"
-            android:exported="true" />
+        <activity
+            android:name=".view.MakeABookingActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".view.AdminDisplayBookingsActivity"
-            android:exported="true" />
+        <activity android:name=".view.MyBookingsActivity" />
 
-        <activity android:name=".view.AdminHomeActivity"
-            android:exported="true" />
+        <activity
+            android:name=".view.UserHomeActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".view.DisplayBookingsActivity"
-            android:exported="true" />
+        <activity
+            android:name=".view.LoginActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".view.MakeABookingActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-
-        <activity android:name=".view.UserHomeActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-
-        <activity android:name=".view.LoginActivity"
-            android:screenOrientation="portrait"
-            android:exported="true" />
-
-        <activity android:name=".view.RegisterActivity"
-            android:screenOrientation="portrait"
-            android:exported="true">
+        <!-- 🔥 MAIN -->
+        <activity
+            android:name=".view.RegisterActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -55,6 +90,7 @@
 
         </activity>
 
+        <!-- 📂 FILE PROVIDER -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -63,7 +99,7 @@
 
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
     </application>

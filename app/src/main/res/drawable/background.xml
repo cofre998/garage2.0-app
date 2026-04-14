@@ -1,4 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-</selector>
+    <!-- Fondo base -->
+    <item>
+        <shape>
+            <gradient
+                android:startColor="#0A0C18"
+                android:endColor="#151C3B"
+                android:angle="135"/>
+        </shape>
+    </item>
+
+    <!-- Glow arriba -->
+    <item>
+        <shape>
+            <gradient
+                android:startColor="#3326C6DA"
+                android:endColor="#00000000"
+                android:angle="270"/>
+        </shape>
+    </item>
+
+</layer-list>

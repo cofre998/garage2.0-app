@@ -65,7 +65,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginEnd="207dp"
         android:layout_marginBottom="36dp"
-        android:text="Make a booking"
+        android:text="Agendar Cita"
         android:textAllCaps="false"
         android:textColor="#ffffff"
         android:background="@drawable/shape_button"
@@ -84,7 +84,7 @@
         android:layout_marginEnd="200dp"
         android:layout_marginBottom="130dp"
         android:background="@drawable/shape_button"
-        android:text="Display Bookings"
+        android:text="Mostrar Citas"
         android:textAllCaps="false"
         android:textColor="#ffffff"
         android:textSize="12dp"
@@ -92,5 +92,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/makeABooking" />
+
+    <Button
+        android:id="@+id/btnTracking"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="📍 Ver técnico en camino"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="@drawable/shape_button"
+        android:padding="14dp"
+        app:layout_constraintTop_toBottomOf="@id/displayBookings"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

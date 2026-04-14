@@ -1,19 +1,19 @@
 <resources>
-    <string name="app_name">Ger\'s Garage</string>
+    <string name="app_name">Taller electrico electronico automotriz PatoAparato </string>
 
-    <string name="make_prompt">Choose a make of Vehicle *</string>
-    <string name="type_prompt">Choose a type of Vehicle *</string>
-    <string name="engine_prompt">Choose a engine type *</string>
-    <string name="mechanic_prompt">Choose a mechanic</string>
-    <string name="vehicle_prompt">Choose a vehicle</string>
-    <string name="shift_prompt">Book available time</string>
-    <string name="typeOfBooking_prompt">Choose a type of Booking</string>
-    <string name="confirm_dialog_message">Are you sure you want to update the status?</string>
-    <string name="confirm_dialog_print_message">print?</string>
+    <string name="make_prompt">Escoger vehiculo *</string>
+    <string name="type_prompt">Escoger un tipo de vehiculo *</string>
+    <string name="engine_prompt">Escoger tipo de motor *</string>
+    <string name="mechanic_prompt">Escoger electrico</string>
+    <string name="vehicle_prompt">Escoger un vehiculo</string>
+    <string name="shift_prompt">Agendar cita para reparacion</string>
+    <string name="typeOfBooking_prompt">Escoger el tipo de cita</string>
+    <string name="confirm_dialog_message">Estas seguro de querer actualizar el estado?</string>
+    <string name="confirm_dialog_print_message">Imprimir?</string>
 
-    <string name="confirm_dialog_title">Update booking status</string>
+    <string name="confirm_dialog_title">Actualizar estado para cita</string>
     <string name="confirm_dialog_confirm">Ok</string>
-    <string name="confirm_dialog_cancel">Cancel</string>
+    <string name="confirm_dialog_cancel">Cancelar</string>
 
 
 </resources>

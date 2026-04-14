@@ -42,18 +42,6 @@ public class SetUpDao {
     private Integer quantityMajorRepairShift;
     private String emailAdmin = "jonathancofre998@gmail.com";
 
-    public Mechanic getMechanic(Integer id) {
-
-        for (Mechanic m: mechanics) {
-
-            if (m.getId() == id)
-                return m;
-
-        }
-
-        return null;
-
-    }
 
     public ArrayList<Mechanic> getMechanics() {
         return mechanics;
@@ -139,14 +127,6 @@ public class SetUpDao {
 
         mechanics = new ArrayList<>();
 
-        Mechanic mechanic = new Mechanic(1, "John");
-        mechanics.add(mechanic);
-        mechanic = new Mechanic(2, "Bob");
-        mechanics.add(mechanic);
-        mechanic = new Mechanic(3, "Pauk");
-        mechanics.add(mechanic);
-        mechanic = new Mechanic(4, "Francisco");
-        mechanics.add(mechanic);
 
     }
 

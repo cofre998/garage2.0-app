@@ -14,6 +14,8 @@ public class DisplayBookingsContract {
         void showErrorMessage(String errorMessage);
         void showMechanicAssignedSuccess(String message);
         void showMechanicAssignedError(String message);// <-- AGREGADO
+
+        void showSuccessMessage(String message);
        // getBookings();
     }
 

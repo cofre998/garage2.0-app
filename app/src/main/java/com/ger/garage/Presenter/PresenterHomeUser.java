@@ -3,7 +3,14 @@ package com.ger.garage.Presenter;
 import com.ger.garage.model.User;
 import com.ger.garage.model.UserDao;
 
+import java.util.ArrayList;
+
+
 public class PresenterHomeUser implements HomeUserContract.Presenter, FirebaseListener {
+
+    public void onSuccessBookingsString(ArrayList<String> list) {
+        // no usado
+    }
 
     private UserDao userDao;
     private HomeUserContract.View view;
@@ -12,6 +19,8 @@ public class PresenterHomeUser implements HomeUserContract.Presenter, FirebaseLi
         this.view = view;
         userDao = new UserDao();
     }
+
+
 
     @Override
     public void logOut() {

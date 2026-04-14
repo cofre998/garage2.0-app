@@ -1,106 +1,124 @@
 package com.ger.garage.view;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.graphics.Color;
-import android.os.Bundle;
-import android.text.SpannableString;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 import android.widget.Toast;
+import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.TextView;
 
-import com.ger.garage.Presenter.DisplayBookingsContract;
-import com.ger.garage.Presenter.PresenterDisplayBookings;
+import com.ger.garage.Presenter.HomeAdminContract;
+import com.ger.garage.Presenter.PresenterHomeAdmin;
 import com.ger.garage.R;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.Calendar;
 
-public class DisplayBookingsActivity extends AppCompatActivity implements DisplayBookingsContract.View {
+public class DisplayBookingsActivity extends AppCompatActivity
+        implements HomeAdminContract.View, DatePickerDialog.OnDateSetListener {
 
-    private PresenterDisplayBookings presenter;
-    @Override
-    public void showMechanicAssignedError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
+    private Button btnMakeAAdminBooking;
+    private Button btnDisplayAdminBooking;
+    private Button btnAllocateMechanic;
+    private Button btnAllocateCost;
 
-    @Override
-    public void showMechanicAssignedSuccess(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-
-    public void getBookings() {
-        // No necesitas hacer nada aquí, ya que tu Presenter maneja la lógica
-    }
-
+    private HomeAdminContract.Presenter presenter;
+    private String role;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home_admin);
 
-        setContentView(R.layout.activity_display_bookings);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        presenter = new PresenterDisplayBookings(this);
+        presenter = new PresenterHomeAdmin(this);
 
-        presenter.getBookings();
+        btnMakeAAdminBooking = findViewById(R.id.btnMakeAAdminBooking);
+        btnDisplayAdminBooking = findViewById(R.id.btndisplayAdminBooking);
+        btnAllocateMechanic = findViewById(R.id.btnAllocateMechanic);
+        btnAllocateCost = findViewById(R.id.btnAllocateCost);
 
+        TextView title = findViewById(R.id.titleRole);
+
+        role = getIntent().getStringExtra("role");
+
+        if ("admin".equals(role)) {
+            title.setText("Admin");
+        } else if ("mechanic".equals(role)) {
+            title.setText("Mecánico");
+        }
+
+        setListeners();
     }
 
+
+
+    private void setListeners() {
+
+
+
+        btnMakeAAdminBooking.setOnClickListener(v ->
+                startActivity(new Intent(this, MakeABookingActivity.class))
+        );
+
+        btnDisplayAdminBooking.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AdminDisplayBookingsActivity.class);
+            intent.putExtra("role", role); // 🔥 IMPORTANTE
+            startActivity(intent);
+        });
+
+        btnAllocateMechanic.setOnClickListener(v -> {
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    this,
+                    this,
+                    Calendar.getInstance().get(Calendar.YEAR),
+                    Calendar.getInstance().get(Calendar.MONTH),
+                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+            );
+
+            datePickerDialog.show();
+        });
+
+        btnAllocateCost.setOnClickListener(v ->
+                startActivity(new Intent(this, AllocateCostActivity.class))
+        );
+    }
 
     @Override
-    public void showBookings(HashMap<Integer, String> bookings, HashMap<Integer, String> status) {
-
-        final String noBookings = "You have not booked a vehicle to fix/service yet";
-        ListView listViewbookings = findViewById(R.id.bookings);
-
-        if (!bookings.isEmpty()) {
-
-            List<HashMap<String, String>> listItems = new ArrayList<>();
-
-            SimpleAdapter adapter = new SimpleAdapter(this, listItems, R.layout.list_item,
-                    new String[]{"First Line", "Second Line"},
-                    new int[]{R.id.infoBooking, R.id.statusBooking});
-
-            Iterator it = bookings.entrySet().iterator();
-
-            while (it.hasNext()) {
-
-                HashMap<String, String> resultMap = new HashMap<>();
-
-                Map.Entry pair = (Map.Entry) it.next();
-
-                resultMap.put("First Line", (String) pair.getValue());
-                resultMap.put("Second Line", "Status: " + (String) status.get(pair.getKey()).toString());
-                listItems.add(resultMap);
-
-            }
-
-            listViewbookings.setAdapter(adapter);
-
-        } else
-            Toast.makeText(DisplayBookingsActivity.this, noBookings, Toast.LENGTH_LONG).show();
-
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.make_a_booking_menu, menu);
+        return true;
     }
 
     @Override
-    public void showErrorMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.logout) {
+            presenter.logOut();
+            startActivity(new Intent(this, RegisterActivity.class));
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        }
+
+        return true;
     }
 
-    public void showSuccessMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -109,8 +127,13 @@ public class DisplayBookingsActivity extends AppCompatActivity implements Displa
 
         presenter.detach();
         presenter = null;
-
     }
 
-    // call on destroy ad presenter check register adn test all together
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+
+        Intent intent = new Intent(this, AllocateMechanicActivity.class);
+        intent.putExtra("date", LocalDate.of(year, month + 1, dayOfMonth).toString());
+        startActivity(intent);
+    }
 }

@@ -124,8 +124,9 @@ public class RegisterActivity extends AppCompatActivity implements PresenterRegi
                 // when user select a item
                 if (position != 0) {
                     vehicleMakeString = parent.getItemAtPosition(position).toString();
-                    if (vehicleMakeString == otherMake)
-                        other.setEnabled(true); // enable other make
+                    if (vehicleMakeString.equals(otherMake)) {
+                        vehicleMakeString = other.getText().toString();
+                    }
                     else
                         other.setEnabled(false);
                 }
@@ -239,55 +240,56 @@ public class RegisterActivity extends AppCompatActivity implements PresenterRegi
         vehicleMake = findViewById(R.id.vehicleMake);
         vehicleEngineType = findViewById(R.id.vehicleEngineType);
 
+
         btnRegister = findViewById(R.id.register);
 
 
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // check if every field is not emtpy
-                String make;
+        btnRegister.setOnClickListener(v -> {
 
-                if (isEditTextEmpty(email, "email"))
-                    return;
-                if (isEditTextEmpty(password, "password"))
-                    return;
-                if (isEditTextEmpty(name, "Name"))
-                    return;
-                if (isEditTextEmpty(mobilePhoneNumber, "Mobile Phone Number"))
-                    return;
-                if (isEditTextEmpty(vehiclePlate, "Number Plate"))
-                    return;
-                if (vehicleMakeString == "") {
-                    Toast.makeText(RegisterActivity.this, "Please select your make for the vehicle", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                else make = vehicleMakeString;
-                if (vehicleEngineTypeString == "") {
-                    Toast.makeText(RegisterActivity.this, "Please select your engine type for the vehicle", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (vehicleTypeString == "") {
-                    Toast.makeText(RegisterActivity.this, "Please select your type for the vehicle", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (vehicleMakeString == "Other")
-                    if (isEditTextEmpty(other, "make"))
-                        return;
-                    else
-                        make = other.getText().toString();
+            if (isEditTextEmpty(email, "email")) return;
+            if (isEditTextEmpty(password, "password")) return;
+            if (isEditTextEmpty(name, "Name")) return;
+            if (isEditTextEmpty(mobilePhoneNumber, "Mobile Phone Number")) return;
+            if (isEditTextEmpty(vehiclePlate, "Number Plate")) return;
 
-                // validate vehicle plate
-                if (!presenterRegister.isPlateNumbervalid(vehiclePlate.getText().toString())) {
-                    Toast.makeText(RegisterActivity.this, "The format of the plate number is not valid", Toast.LENGTH_SHORT).show();
-                    vehiclePlate.requestFocus();
-                    return;
-                }
-                // validate email, password (firebase authentication validate lenght > 6) and mobilePhone number
-                presenterRegister.register(email.getText().toString(), password.getText().toString(), mobilePhoneNumber.getText().toString(), name.getText().toString(), vehiclePlate.getText().toString(), vehicleMakeString, vehicleEngineTypeString, vehicleTypeString);
-
+            if (vehicleMakeString.isEmpty()) {
+                Toast.makeText(this, "Seleccione marca", Toast.LENGTH_SHORT).show();
+                return;
             }
 
+            if (vehicleEngineTypeString.isEmpty()) {
+                Toast.makeText(this, "Seleccione motor", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (vehicleTypeString.isEmpty()) {
+                Toast.makeText(this, "Seleccione tipo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String emailText = email.getText().toString().trim();
+            String passwordText = password.getText().toString().trim();
+
+            // 🔥 ROLE AUTOMÁTICO
+            String userType = "user";
+
+            if (emailText.contains("admin")) {
+                userType = "admin";
+            } else if (emailText.contains("mechanic")) {
+                userType = "mechanic";
+            }
+
+            presenterRegister.register(
+                    emailText,
+                    passwordText,
+                    mobilePhoneNumber.getText().toString(),
+                    name.getText().toString(),
+                    vehiclePlate.getText().toString(),
+                    vehicleMakeString,
+                    vehicleEngineTypeString,
+                    vehicleTypeString,
+                    userType
+            );
         });
 
     }
@@ -298,6 +300,10 @@ public class RegisterActivity extends AppCompatActivity implements PresenterRegi
         Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_LONG).show();
 
     }
+
+
+
+
 
     // go to adminHomeScreen (owner of the garage) or userHomeScreen (customer)
     public void goToHomePage(String userType) {
@@ -314,7 +320,7 @@ public class RegisterActivity extends AppCompatActivity implements PresenterRegi
         super.onStart();
 
         if (presenterRegister.isLoggedIn())
-            presenterRegister.getHomeActivity();
+            ;
     }
 
     @Override

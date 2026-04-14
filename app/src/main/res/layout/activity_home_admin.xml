@@ -12,14 +12,25 @@
         android:id="@+id/toolbar"
         layout="@layout/custom_toolbar" />
 
+    <TextView
+        android:id="@+id/titleRole"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADMIN"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
     <Button
         android:id="@+id/btnMakeAAdminBooking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Make a booking"
+        android:text="Agendar una cita"
         android:textAllCaps="false"
         android:textColor="#ffffff"
-        android:background="@drawable/shape_button"
+        android:background="@drawable/ripple_button"
         android:textSize="12dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="50dp"
@@ -29,25 +40,28 @@
         android:id="@+id/btndisplayAdminBooking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Display Bookings"
+        android:text="Mostrar cita"
         android:textAllCaps="false"
         android:textColor="#ffffff"
-        android:background="@drawable/shape_button"
+        android:background="@drawable/ripple_button"
         android:textSize="12dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"/>
 
+
+
+
     <Button
         android:id="@+id/btnAllocateMechanic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Allocate Mechanic"
+        android:text="Asignar Electrico"
         tools:layout_editor_absoluteX="36dp"
         tools:layout_editor_absoluteY="239dp"
         android:textAllCaps="false"
         android:textColor="#ffffff"
-        android:background="@drawable/shape_button"
+        android:background="@drawable/ripple_button"
         android:textSize="12dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
@@ -57,14 +71,23 @@
         android:id="@+id/btnAllocateCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Allocate Cost"
+        android:text="Agregar Costos"
         tools:layout_editor_absoluteX="43dp"
         tools:layout_editor_absoluteY="310dp"
         android:textAllCaps="false"
         android:textColor="#ffffff"
-        android:background="@drawable/shape_button"
+        android:background="@drawable/ripple_button"
         android:textSize="12dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp" />
+
+    <Button
+        android:id="@+id/btnModoTerreno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Modo Terreno (semana)"
+        android:layout_margin="16dp"/>
+
+
 
 </LinearLayout>

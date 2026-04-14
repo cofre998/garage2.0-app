@@ -4,8 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#636363"
-    android:elevation="4dp"
+    android:background="#0D0F1A"
+    android:elevation="8dp"
     android:id="@+id/custom_toolbar"
     app:title="@string/app_name"
     app:titleTextColor="#ffffff">

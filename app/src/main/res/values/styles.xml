@@ -16,4 +16,11 @@
         <!--     Used for the background
         <item name="android:background">#4CAF50</item> -->
     </style>
+    <style name="FilterButton">
+        <item name="android:background">@drawable/shape_button2</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:padding">10dp</item>
+    </style>
 </resources>

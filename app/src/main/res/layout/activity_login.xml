@@ -53,12 +53,13 @@
         android:layout_marginTop="2dp"
         android:layout_marginEnd="176dp"
         android:layout_marginBottom="310dp"
-        android:text="Not registered? Register here"
+        android:text="No esta registrado? Register here"
         android:textColorHint="#010b13"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login" />
+
 
     <Button
         android:id="@+id/login"
@@ -69,7 +70,7 @@
         android:layout_marginEnd="150dp"
         android:layout_marginBottom="2dp"
         android:background="@drawable/shape_button"
-        android:text="Login"
+        android:text="Loguearse"
         android:textAllCaps="false"
         android:textColor="#ffffff"
         android:textColorHint="#010b13"

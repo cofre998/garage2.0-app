@@ -1,6 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:layout_margin="8dp"
+    android:background="@drawable/bg_booking_card">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- VEHÍCULO -->
+    <TextView
+        android:id="@+id/txtVehicle"
+        android:text="Vehículo"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#000000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/txtPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📞 Teléfono"
+        android:textSize="14sp"/>
+
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ver mapa"/>
+
+    <Button
+        android:id="@+id/btnCall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Llamar"/>
+
+    <!-- FECHA -->
+    <TextView
+        android:id="@+id/txtDate"
+        android:text="Fecha"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- TIPO -->
+    <TextView
+        android:id="@+id/txtType"
+        android:text="Tipo"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- STATUS -->
+    <TextView
+        android:id="@+id/txtStatus"
+        android:text="Estado"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:paddingTop="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/txtEstadoPago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PENDIENTE"
+        android:textStyle="bold"
+        android:textSize="14sp"/>
+
+</LinearLayout>

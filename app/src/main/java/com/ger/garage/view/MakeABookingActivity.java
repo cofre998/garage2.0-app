@@ -11,356 +11,324 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CalendarView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.ger.garage.Presenter.MakeABookingContract;
 import com.ger.garage.Presenter.PresenterMakeABooking;
 import com.ger.garage.R;
 
-
 import java.time.LocalDate;
 import java.util.ArrayList;
-
-/*
-
-    This class allow to make a booking
-
- */
+import android.location.Location;
+import android.location.LocationManager;
+import android.content.pm.PackageManager;
+import androidx.core.app.ActivityCompat;
 
 public class MakeABookingActivity extends AppCompatActivity implements MakeABookingContract.View {
 
-    // presenter
     private MakeABookingContract.Presenter presenter;
 
-    // elements on the screen
-    private Spinner vehiclesSpinner;
+    private EditText vehiclesInput, inputAddress, inputPhone;
     private CalendarView calendar;
     private Spinner shiftSpinner;
-    private Spinner typeOfBookingSpinner;
+    private AutoCompleteTextView typeOfBookingInput;
     private Button btnBook;
     private ProgressBar progressBar;
+    private CheckBox checkOnSite;
 
-    // variables globales save current data
+    private double lat = 0, lng = 0;
+    private boolean isOnSite = false;
+
     private String vehicleString = "";
     private String shiftString = "";
     private String typeOfBookingString = "";
     private LocalDate calendarDate = LocalDate.now();
 
-    // message to print on the screen
-    private final String chooseVehicle = "Choose a vehicle";
     private final String chooseshift = "Book available time";
-    private final String chooseTypeOfBooking = "Choose a type of booking";
-    private final String selectVehicle = "Please select the vehicle";
-    private final String selectTypeOfBooking = "Please select the type of booking";
-    private final String selectShfit = "Please select a shift";
-    private final String dateInPast = "The date selected is in the past";
-    private final String notWorkingDay = "The garage is not open on ";
-    private final String bookingCreatedSuccessfully1 = "The booking ";
-    private final String bookingCreatedSuccessfully2 = " was created successfully";
-    private final String noBookingSelected = "First, the type of booking must be selected";
-    private final String noShiftsAvailable = "No shifts available for this date";
+
+
+    @Override
+    public void showVehicles(ArrayList<String> vehicles) {
+
+        if (vehicles == null || vehicles.isEmpty()) return;
+
+        // 🔥 Autocompleta con el primer vehículo
+        vehiclesInput.setText(vehicles.get(0));
+
+        // 🔥 Si quieres dropdown también:
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                vehicles
+        );
+
+        // Si cambias vehiclesInput a AutoCompleteTextView → mejor UX
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_a_booking);
 
-        presenter = new PresenterMakeABooking(MakeABookingActivity.this);
+        presenter = new PresenterMakeABooking(this);
+
+        initViews();
+        setupToolbar();
+        setupTypeBooking();
+        setupCalendar();
+        setupShifts();
+        setupCheckBox();
+        setupButton();
+
+        presenter.getTypeOfBooking();
+    }
+
+    // 🔥 Inicializa TODO en un solo lugar
+    private void initViews() {
+        vehiclesInput = findViewById(R.id.vehicles);
+        shiftSpinner = findViewById(R.id.listViewShifts);
+        typeOfBookingInput = findViewById(R.id.typeOfBookingInput);
+        calendar = findViewById(R.id.calendarView);
+        btnBook = findViewById(R.id.book);
+        progressBar = findViewById(R.id.progressBar);
+        checkOnSite = findViewById(R.id.checkOnSite);
+        inputAddress = findViewById(R.id.inputAddress);
+        inputPhone = findViewById(R.id.inputPhone);
+
+        progressBar.setVisibility(View.GONE);
+    }
+
+    private void setupToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        progressBar = findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.GONE);
-        addCalendar();
-        addShifts();
-        addVehicles();
-        book();
-
-        presenter.getVehicles();
-        presenter.getTypeOfBooking();
-
     }
 
-    // add data to the spinner vehicle. it works with a ArrauAdapter<T>
-    private void addVehicles() {
+    // 🔥 AUTOCOMPLETE LIMPIO
+    private void setupTypeBooking() {
 
-        vehiclesSpinner = findViewById(R.id.vehicles);
-        ArrayList<String> vehicles = new ArrayList<>();
-        vehicles.add(chooseVehicle);
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, vehicles);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        vehiclesSpinner.setAdapter(dataAdapter);
-        vehiclesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ArrayList<String> types = new ArrayList<>();
+        types.add("Chequeo básico");
+        types.add("Chequeo avanzado");
+        types.add("Cambio de aceite");
 
-            @Override // select a item handler
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                types
+        );
 
-                if (position != 0) {
-                    vehicleString = parent.getItemAtPosition(position).toString();
+        typeOfBookingInput.setAdapter(adapter);
 
-              }
-                else
-                    vehicleString = "";
-            }
+        typeOfBookingInput.setOnItemClickListener((parent, view, position, id) ->
+                typeOfBookingString = parent.getItemAtPosition(position).toString()
+        );
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        typeOfBookingInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                typeOfBookingString = typeOfBookingInput.getText().toString().trim();
             }
         });
-
     }
 
-    private void addCalendar() {
+    private void resetShifts() {
+        ArrayList<String> shifts = new ArrayList<>();
+        shifts.add(chooseshift);
 
-        calendar = findViewById(R.id.calendarView);
-        calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override // user select a date
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                calendarDate = LocalDate.of(year, month + 1, dayOfMonth);
-                resetShifts(new ArrayList<String>());
-            }
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) shiftSpinner.getAdapter();
+        adapter.clear();
+        adapter.addAll(shifts);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setupCalendar() {
+        calendar.setOnDateChangeListener((view, year, month, day) -> {
+            calendarDate = LocalDate.of(year, month + 1, day);
+            resetShifts();
         });
-
     }
 
+    private void setupShifts() {
 
-    // add Shifts to the spinner
-    private void addShifts() {
+        ArrayList<String> shifts = new ArrayList<>();
+        shifts.add(chooseshift);
 
-        shiftSpinner = findViewById(R.id.shift);
-        final ArrayList<String> shifts = new ArrayList<>();
-        shifts.add(0, chooseshift);
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, shifts);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        shiftSpinner.setAdapter(dataAdapter);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                shifts
+        );
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        shiftSpinner.setAdapter(adapter);
 
         shiftSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (position != 0) {
-                    shiftString = parent.getItemAtPosition(position).toString();
-                }
-                else
-                    shiftString = "";
+                shiftString = position != 0 ? parent.getItemAtPosition(position).toString() : "";
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        shiftSpinner.setOnTouchListener(new View.OnTouchListener() {
+        shiftSpinner.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
 
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-
-                    if (typeOfBookingString == "") { // if want to select a shift but the type of booking is empty, error
-
-                        resetShifts(new ArrayList<String>());
-
-                        Toast.makeText(MakeABookingActivity.this, noBookingSelected, Toast.LENGTH_LONG).show();
-
-                    } else if (calendarDate.isBefore(LocalDate.now())) { // if the date is before today
-
-                        resetShifts(new ArrayList<String>());
-
-                        Toast.makeText(MakeABookingActivity.this, dateInPast, Toast.LENGTH_LONG).show();
-
-                    } else if (!presenter.isWorkingDay(calendarDate.getDayOfWeek())) { // if it is not a working day
-
-                        resetShifts(new ArrayList<String>());
-
-                        String day = calendarDate.getDayOfWeek().toString();
-
-                        day = day.substring(0,1).toUpperCase() + day.substring(1).toLowerCase();
-
-                        Toast.makeText(MakeABookingActivity.this, notWorkingDay + day, Toast.LENGTH_LONG).show();
-
-                    }
-                    else {
-                        progressBar.setVisibility(View.VISIBLE);
-                        presenter.getShifts(typeOfBookingString, calendarDate);
-
-                    }
-
-                }
-
-                return false;
-            }
-
-        });
-
-    }
-
-    private void book() {
-
-        btnBook = findViewById(R.id.book);
-
-        btnBook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (vehicleString.isEmpty())
-                    Toast.makeText(MakeABookingActivity.this, selectVehicle, Toast.LENGTH_LONG).show();
-                else if (typeOfBookingString.isEmpty())
-                    Toast.makeText(MakeABookingActivity.this, selectTypeOfBooking , Toast.LENGTH_LONG).show();
-                else if (calendarDate.isBefore(LocalDate.now()))
-                    Toast.makeText(MakeABookingActivity.this, dateInPast , Toast.LENGTH_LONG).show();
-                else if (!presenter.isWorkingDay(calendarDate.getDayOfWeek())) {
-
-                    String day = calendarDate.getDayOfWeek().toString();
-                    day = day.substring(0,1).toUpperCase() + day.substring(1).toLowerCase();
-
-                    Toast.makeText(MakeABookingActivity.this, day , Toast.LENGTH_LONG).show();
-                }
-                else if (shiftString.isEmpty())
-                    Toast.makeText(MakeABookingActivity.this, selectShfit, Toast.LENGTH_LONG).show();
-                else {
+                if (typeOfBookingString.isEmpty()) {
+                    Toast.makeText(this, "Selecciona tipo de booking primero", Toast.LENGTH_LONG).show();
+                } else {
                     progressBar.setVisibility(View.VISIBLE);
-                    presenter.book(vehicleString, typeOfBookingString, calendarDate, shiftString);
+                    presenter.getShifts(typeOfBookingString, calendarDate);
                 }
-
             }
+            return false;
         });
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.make_a_booking_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.logout:
-                presenter.logOut();
-                Intent intentRegister = new Intent(MakeABookingActivity.this, RegisterActivity.class);
-                startActivity(intentRegister);
-                break;
-            default:
-                break;
-        }
-
-        return true;
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.detach();
-        btnBook.setOnClickListener(null);
-        shiftSpinner.setOnItemSelectedListener(null);
-        shiftSpinner.setOnTouchListener(null);
-        vehiclesSpinner.setOnItemSelectedListener(null);
-        typeOfBookingSpinner.setOnItemSelectedListener(null);
-        vehiclesSpinner.setAdapter(null);
-        shiftSpinner.setAdapter(null);
-        typeOfBookingSpinner.setAdapter(null);
-
-        // Detach handlers
-    }
-
-    // update spinner
-    @Override
-    public void showVehicles(ArrayList<String> vehicles) {
-
-        vehicles.add(0, chooseVehicle);
-        ArrayAdapter<String> dataAdapter = (ArrayAdapter<String>) vehiclesSpinner.getAdapter();
-        dataAdapter.clear();
-        dataAdapter.addAll(vehicles);
-        dataAdapter.notifyDataSetChanged();
-        vehiclesSpinner.setSelection(0);
-
-    }
-
-    // update type of booking
-    @Override
-    public void showTypeOfBooking(ArrayList<String> typeOfBookings) {
-
-        typeOfBookingSpinner = findViewById(R.id.typeOfBooking);
-        typeOfBookings.add(0, chooseTypeOfBooking);
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, typeOfBookings);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        typeOfBookingSpinner.setAdapter(dataAdapter);
-        typeOfBookingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                if (position != 0) {
-                    resetShifts(new ArrayList<String>());
-                    typeOfBookingString = parent.getItemAtPosition(position).toString();
-                }
-                else
-                    typeOfBookingString = "";
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-
-    }
-
-
-    // show shifts available
-    @Override
-    public void showShiftsAvailable(ArrayList<String> shiftAvailable) {
-
-        if (shiftAvailable.isEmpty())
-            Toast.makeText(MakeABookingActivity.this, noShiftsAvailable, Toast.LENGTH_LONG).show();
-
-        shiftAvailable.add(0, chooseshift);
-        ArrayAdapter<String> dataAdapter = (ArrayAdapter<String>) shiftSpinner.getAdapter();
-        dataAdapter.clear();
-        dataAdapter.addAll(shiftAvailable);
-        dataAdapter.notifyDataSetChanged();
-        shiftSpinner.setSelection(0);
-        progressBar.setVisibility(View.GONE);
-
-    }
-
-    // blank spinner shift
-    private void resetShifts(ArrayList<String> shiftAvailable) {
-
-        shiftAvailable.add(0, chooseshift);
-        ArrayAdapter<String> dataAdapter = (ArrayAdapter<String>) shiftSpinner.getAdapter();
-        dataAdapter.clear();
-        dataAdapter.addAll(shiftAvailable);
-        dataAdapter.notifyDataSetChanged();
-        shiftSpinner.setSelection(0);
-
-    }
-
-    @Override
-    public void showErrorMessage(String errorMessage) {
-        Toast.makeText(MakeABookingActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-        if (progressBar != null && progressBar.isShown())
-            progressBar.setVisibility(View.GONE);
-
     }
 
     @Override
     public void showSuccessMessage(String bookingId) {
-        Toast.makeText(MakeABookingActivity.this, bookingCreatedSuccessfully1 + bookingId + bookingCreatedSuccessfully2, Toast.LENGTH_LONG).show();
-        resetShifts(new ArrayList<String>());
-        if (progressBar != null && progressBar.isShown())
-            progressBar.setVisibility(View.GONE);
+        Toast.makeText(this, "Booking creado: " + bookingId, Toast.LENGTH_LONG).show();
+        progressBar.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showErrorMessage(String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showShiftsAvailable(ArrayList<String> shifts) {
+
+        shifts.add(0, chooseshift);
+
+        ArrayAdapter<String> adapter = (ArrayAdapter<String>) shiftSpinner.getAdapter();
+        adapter.clear();
+        adapter.addAll(shifts);
+        adapter.notifyDataSetChanged();
+
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showTypeOfBooking(ArrayList<String> types) {
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                types
+        );
+
+        typeOfBookingInput.setAdapter(adapter);
+    }
+
+    private void setupCheckBox() {
+        checkOnSite.setOnCheckedChangeListener((buttonView, isChecked) ->
+                inputAddress.setVisibility(isChecked ? View.VISIBLE : View.GONE)
+        );
+    }
+
+    private void setupButton() {
+
+        btnBook.setOnClickListener(v -> {
+
+            typeOfBookingString = typeOfBookingInput.getText().toString().trim();
+            vehicleString = vehiclesInput.getText().toString().toUpperCase().trim();
+            isOnSite = checkOnSite.isChecked();
+
+            String address = inputAddress.getText().toString().trim();
+            String phone = inputPhone.getText().toString().trim();
+
+            if (vehicleString.isEmpty()) {
+                showToast("Ingrese patente");
+                return;
+            }
+
+            if (!isValidChileanPlate(vehicleString)) {
+                showToast("Formato inválido");
+                return;
+            }
+
+            if (phone.isEmpty()) {
+                showToast("Ingrese teléfono");
+                return;
+            }
+
+            if (typeOfBookingString.isEmpty()) {
+                showToast("Selecciona tipo de booking");
+                return;
+            }
+
+            if (shiftString.isEmpty()) {
+                showToast("Selecciona horario");
+                return;
+            }
+
+                    if (isOnSite) {
+                        if (address.isEmpty()) {
+                            showToast("Ingrese dirección");
+                            return;
+                        }
+
+                        getLocationFromAddress(address);
+                    }
+
+            progressBar.setVisibility(View.VISIBLE);
+
+            presenter.book(
+                    vehicleString,
+                    typeOfBookingString,
+                    calendarDate,
+                    shiftString,
+                    isOnSite,
+                    lat,
+                    lng,
+                    address,
+                    phone
+            );
+        });
+    }
+
+    private void getLocationFromAddress(String addressText) {
+
+        try {
+            android.location.Geocoder geocoder =
+                    new android.location.Geocoder(this, java.util.Locale.getDefault());
+
+            java.util.List<android.location.Address> addresses =
+                    geocoder.getFromLocationName(addressText, 1);
+
+            if (addresses != null && !addresses.isEmpty()) {
+
+                android.location.Address location = addresses.get(0);
+
+                lat = location.getLatitude();
+                lng = location.getLongitude();
+
+                Toast.makeText(this,
+                        "📍 Dirección convertida correctamente",
+                        Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(this,
+                        "❌ Dirección no encontrada",
+                        Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this,
+                    "Error al convertir dirección",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void showToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    private boolean isValidChileanPlate(String plate) {
+        return plate.matches("^[A-Z]{4}[0-9]{2}$") ||
+                plate.matches("^[A-Z]{2}[0-9]{4}$");
+    }
 }

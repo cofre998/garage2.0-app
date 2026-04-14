@@ -9,11 +9,14 @@ public interface FirebaseListener {
 
     void onSuccessBookings(ArrayList<Booking> bookings);
 
-    void onSuccessUser(User user);
-
-    void onSuccessString(String result);
+    void onSuccessString(String message);
 
     void onSuccessInt(int value);
+
+    void onSuccessUser(User user);
+
+    // ✅ AGREGA ESTE MÉTODO
+    void onSuccessBookingsString(ArrayList<String> list);
 
     void onFailure(FirebaseException e);
 }

@@ -16,7 +16,8 @@ public class MakeABookingContract {
         void getShifts(String typeOfBooking, LocalDate date);
         void getTypeOfBooking();
         boolean isWorkingDay(DayOfWeek day);
-        void book(String vehicle, String typeOfBooking, LocalDate createdAt, String shift);
+        void book(String vehicle, String type, LocalDate date, String shift,
+                  boolean isOnSite, double lat, double lng, String address, String phone);
     }
 
 

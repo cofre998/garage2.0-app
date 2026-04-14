@@ -21,15 +21,23 @@ public class PresenterAllocateMechanic implements AllocateMechanicContract.Prese
     @Override
     public ArrayList<String> getMechanics() {
         ArrayList<String> mechanics = new ArrayList<>();
-        mechanics.add("Juan");
-        mechanics.add("Pedro");
-        mechanics.add("Maria");
+        mechanics.add("Alex");
+        mechanics.add("Jonathan");
+        mechanics.add("Patricio");
         return mechanics;
+    }
+    public String getRandomMechanic() {
+        ArrayList<String> mechanics = getMechanics();
+        return mechanics.get(new java.util.Random().nextInt(mechanics.size()));
     }
 
     @Override
     public void getBookings(LocalDate date) {
         bookingDao.getBookingsByDate(date, date, new FirebaseListener() {
+
+            public void onSuccessBookingsString(ArrayList<String> list) {
+                // no usado
+            }
 
             @Override
             public void onSuccessBookings(ArrayList<Booking> bookings) {
@@ -37,18 +45,39 @@ public class PresenterAllocateMechanic implements AllocateMechanicContract.Prese
                 ArrayList<String> bookingStrings = new ArrayList<>();
 
                 for (Booking b : bookings) {
-                    String mechanicName = b.getMechanic() != null
-                            ? b.getMechanic().getName()
-                            : "No mechanic assigned";
 
-                    bookingStrings.add("ID: " + b.getId()
-                            + " | " + b.getType()
-                            + " | Mechanic: " + mechanicName);
+                    String mechanicName;
+
+                    if (b.getMechanic() == null) {
+                        mechanicName = "No mechanic";
+                    } else {
+                        mechanicName = b.getMechanic().toString();
+                    }
+
+                    String status = (b.getStatus() != null)
+                            ? b.getStatus()
+                            : "Pending";
+
+                    String vehicle = (b.getVehicle() != null)
+                            ? b.getVehicle()
+                            : "No plate";
+
+                    String phone = (b.getUser() != null && b.getUser().getMobilePhoneNumber() != null)
+                            ? b.getUser().getMobilePhoneNumber()
+                            : "No phone";
+
+                    bookingStrings.add(
+                            "ID: " + b.getId()
+                                    + " | " + b.getType()
+                                    + "\nVehicle: " + vehicle
+                                    + " | Phone: " + phone
+                                    + "\nMechanic: " + mechanicName
+                                    + " | Status: " + status
+                    );
                 }
 
                 if (view != null) {
-                    view.setBookingsObjects(bookings); // 🔥 GUARDAMOS OBJETOS
-                    view.showBookings(bookingStrings); // 🔥 MOSTRAMOS STRINGS
+                    view.showBookings(bookingStrings);
                 }
             }
 
@@ -73,14 +102,22 @@ public class PresenterAllocateMechanic implements AllocateMechanicContract.Prese
     @Override
     public void allocateMechanic(HashMap<String, String> mechanicsToAllocate) {
         for (HashMap.Entry<String, String> entry : mechanicsToAllocate.entrySet()) {
+
             String bookingId = entry.getKey();
             String mechanicName = entry.getValue();
 
+            if (mechanicName == null || mechanicName.isEmpty()) {
+                mechanicName = getRandomMechanic();
+            }
+
             bookingDao.allocateMechanic(bookingId, mechanicName, new FirebaseListener() {
-                @Override
-                public void onSuccessBookings(ArrayList<Booking> bookings) {
-                    // No usado aquí
+
+                public void onSuccessBookingsString(ArrayList<String> list) {
+                    // no usado
                 }
+
+                @Override
+                public void onSuccessBookings(ArrayList<Booking> bookings) {}
 
                 @Override
                 public void onSuccessString(String message) {
@@ -90,13 +127,10 @@ public class PresenterAllocateMechanic implements AllocateMechanicContract.Prese
                 }
 
                 @Override
-                public void onSuccessInt(int value) {
-                    // No usado aquí
-                }
+                public void onSuccessInt(int value) {}
 
-                public void onSuccessUser(User user) {
-                    // No usado aquí
-                }
+                @Override
+                public void onSuccessUser(User user) {}
 
                 @Override
                 public void onFailure(FirebaseException e) {
@@ -109,7 +143,5 @@ public class PresenterAllocateMechanic implements AllocateMechanicContract.Prese
     }
 
     @Override
-    public void detach() {
-        // Limpieza si es necesaria
-    }
+    public void detach() {}
 }

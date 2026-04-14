@@ -27,6 +27,7 @@ public class UserHomeActivity extends AppCompatActivity implements HomeUserContr
     private Button btnMakeABooking;
     private Button btnDisplayBookings;
 
+    private Button btnTracking;
     // message
     private final String welcomeMessage1 = "Welcome ";
     private final String welcomeMessage2 = "!";
@@ -46,8 +47,21 @@ public class UserHomeActivity extends AppCompatActivity implements HomeUserContr
         presenter.getUserDetails();
         makeABooking();
         displayBookings();
+        trackingButton();
 
 
+    }
+
+    private void trackingButton() {
+
+        btnTracking = findViewById(R.id.btnTracking);
+
+        btnTracking.setOnClickListener(v -> {
+
+            Intent intent = new Intent(UserHomeActivity.this, TrackingClienteActivity.class);
+            startActivity(intent);
+
+        });
     }
 
     // button display bookings - listener
@@ -59,12 +73,13 @@ public class UserHomeActivity extends AppCompatActivity implements HomeUserContr
             @Override
             public void onClick(View v) {
 
-                Intent intentDisplayBookings = new Intent(UserHomeActivity.this, DisplayBookingsActivity.class);
-                startActivity(intentDisplayBookings);
+                Intent intent = new Intent(UserHomeActivity.this, AdminDisplayBookingsActivity.class);
 
+                intent.putExtra("role", "user"); // 🔥 ESTO ES LO IMPORTANTE
+
+                startActivity(intent);
             }
         });
-
     }
 
     // button make a booking listener
@@ -120,6 +135,7 @@ public class UserHomeActivity extends AppCompatActivity implements HomeUserContr
         btnMakeABooking.setOnClickListener(null);
         presenter.detach();
         presenter = null;
+        btnTracking.setOnClickListener(null);
 
     }
 

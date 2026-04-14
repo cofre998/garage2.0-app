@@ -29,6 +29,10 @@ public class PresenterListOfBookings implements ListOfBookingsContract.Presenter
 
         bookingDao.getBookingsByDate(fDate, sDate, new FirebaseListener() {
 
+            public void onSuccessBookingsString(ArrayList<String> list) {
+                // no usado
+            }
+
             @Override
             public void onSuccessBookings(ArrayList<Booking> bookings) {
 
