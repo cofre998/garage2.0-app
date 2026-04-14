@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "211896973175-e8k958furbhnjpvpst8ng134j1u1son8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ger.garage",
+            "certificate_hash": "87d6c51278262239e77510be15cdb5d74f444c72"
+          }
+        },
+        {
           "client_id": "211896973175-77d4sgcj4f8jaoff82kahhithn98do8a.apps.googleusercontent.com",
           "client_type": 3
         }
